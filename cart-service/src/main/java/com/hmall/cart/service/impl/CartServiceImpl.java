@@ -1,5 +1,6 @@
 package com.hmall.cart.service.impl;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -87,12 +88,14 @@ public class CartServiceImpl extends ServiceImpl<CartMapper, Cart> implements IC
         Set<Long> itemIds = vos.stream().map(CartVO::getItemId).collect(Collectors.toSet());
         // 2.查询商品
         // 2.1 发送请求，查询商品
+        String join1 = CollUtils.join(itemIds, ",");// 查看输出
+        Map<String, String> join2 = Map.of("ids", CollUtil.join(itemIds, ","));// 查看输出
         ResponseEntity<List<ItemDTO>> response = restTemplate.exchange(
                 "http://localhost:8081/items?ids={ids}",
                 HttpMethod.GET,
                 null,
                 new ParameterizedTypeReference<List<ItemDTO>>() {},
-                CollUtils.join(itemIds, ",")
+                Map.of("ids", CollUtil.join(itemIds,","))
         );
         // 2.2 处理结果
         List<ItemDTO> items = null;
