@@ -5,6 +5,7 @@ import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.hmall.cart.client.ItemClient;
 import com.hmall.cart.domain.dto.CartFormDTO;
 import com.hmall.cart.domain.dto.ItemDTO;
 import com.hmall.cart.domain.po.Cart;
@@ -46,6 +47,8 @@ public class CartServiceImpl extends ServiceImpl<CartMapper, Cart> implements IC
     private final RestTemplate restTemplate;
 
     private final DiscoveryClient discoveryClient;
+    
+    private final ItemClient itemClient;
 //     private final IItemService itemService;
 
     @Override
@@ -91,7 +94,7 @@ public class CartServiceImpl extends ServiceImpl<CartMapper, Cart> implements IC
         // 1.获取商品id TODO 处理商品信息
         Set<Long> itemIds = vos.stream().map(CartVO::getItemId).collect(Collectors.toSet());
         // 2.查询商品
-        // 2.1 发现item-service服务的实例列表
+    /*    // 2.1 发现item-service服务的实例列表
         List<ServiceInstance> instances = discoveryClient.getInstances("item-service");
         // 2.2 负载均衡，挑选一个实例
         ServiceInstance instance = instances.get(RandomUtil.randomInt(instances.size()));
@@ -105,12 +108,13 @@ public class CartServiceImpl extends ServiceImpl<CartMapper, Cart> implements IC
                 null,
                 new ParameterizedTypeReference<List<ItemDTO>>() {},
                 Map.of("ids", CollUtil.join(itemIds,","))
-        );
-        // 2.2 处理结果
+        );*/
+        List<ItemDTO> items = itemClient.queryItemByIds(itemIds);
+       /* // 2.2 处理结果
         List<ItemDTO> items = null;
         if (response.getStatusCode().is2xxSuccessful()) {
             items = response.getBody();
-        }
+        }*/
         // 2.3 查询失败，抛出异常
         if (CollUtils.isEmpty(items)) {
             throw new BadRequestException("购物车中商品不存在！");
