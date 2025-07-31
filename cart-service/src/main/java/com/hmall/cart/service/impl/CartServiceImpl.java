@@ -44,12 +44,11 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class CartServiceImpl extends ServiceImpl<CartMapper, Cart> implements ICartService {
-    private final RestTemplate restTemplate;
+//    private final RestTemplate restTemplate;
 
-    private final DiscoveryClient discoveryClient;
+//    private final DiscoveryClient discoveryClient;
     
     private final ItemClient itemClient;
-//     private final IItemService itemService;
 
     @Override
     public void addItem2Cart(CartFormDTO cartFormDTO) {
@@ -90,11 +89,11 @@ public class CartServiceImpl extends ServiceImpl<CartMapper, Cart> implements IC
     }
 
     private void handleCartItems(List<CartVO> vos) {
-
         // 1.获取商品id TODO 处理商品信息
         Set<Long> itemIds = vos.stream().map(CartVO::getItemId).collect(Collectors.toSet());
         // 2.查询商品
-    /*    // 2.1 发现item-service服务的实例列表
+        List<ItemDTO> items = itemClient.queryItemByIds(itemIds);
+        /*// 2.1 发现item-service服务的实例列表
         List<ServiceInstance> instances = discoveryClient.getInstances("item-service");
         // 2.2 负载均衡，挑选一个实例
         ServiceInstance instance = instances.get(RandomUtil.randomInt(instances.size()));
@@ -108,9 +107,8 @@ public class CartServiceImpl extends ServiceImpl<CartMapper, Cart> implements IC
                 null,
                 new ParameterizedTypeReference<List<ItemDTO>>() {},
                 Map.of("ids", CollUtil.join(itemIds,","))
-        );*/
-        List<ItemDTO> items = itemClient.queryItemByIds(itemIds);
-       /* // 2.2 处理结果
+        );
+        // 2.2 处理结果
         List<ItemDTO> items = null;
         if (response.getStatusCode().is2xxSuccessful()) {
             items = response.getBody();
