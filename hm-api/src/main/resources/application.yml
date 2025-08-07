@@ -1,3 +1,6 @@
 #logging:
 #  level:
 #    com.heima.api.client: DEBUG  # 确保 FeignClient 所在包设置为 DEBUG
+#feign:
+#  okhttp:
+#    enabled: true
