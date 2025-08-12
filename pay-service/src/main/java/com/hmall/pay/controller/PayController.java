@@ -19,7 +19,7 @@ import java.util.List;
 @RestController
 @RequestMapping("pay-orders")
 @RequiredArgsConstructor
-public class PayController {
+public class PayController  {
 
     private final IPayOrderService payOrderService;
 
