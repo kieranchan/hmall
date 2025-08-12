@@ -51,9 +51,9 @@ hm:
     alias: hmall
     password: hmall123
     token-t-tL: 3000000m
-  auth:
-    excludePaths:
-      - /search/**
-      - /users/login
-      - /items/**
-      - /hi  
+#  auth:
+#    excludePaths:
+#      - /search/**
+#      - /users/login
+#      - /items/**
+#      - /hi  
