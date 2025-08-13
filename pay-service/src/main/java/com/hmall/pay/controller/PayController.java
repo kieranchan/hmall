@@ -31,7 +31,7 @@ public class PayController  {
             throw new BizIllegalException("抱歉，目前只支持余额支付");
         }
         return payOrderService.applyPayOrder(applyDTO);
-    }
+    } 
 
     @ApiOperation("尝试基于用户余额支付")
     @ApiImplicitParam(value = "支付单id", name = "id")
