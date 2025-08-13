@@ -22,8 +22,6 @@ import java.util.List;
 public class PayController  {
 
     private final IPayOrderService payOrderService;
- 
-    
     
     @ApiOperation("生成支付单")
     @PostMapping
