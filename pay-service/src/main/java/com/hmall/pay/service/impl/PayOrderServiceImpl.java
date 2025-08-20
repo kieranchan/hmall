@@ -10,7 +10,6 @@ import com.hmall.common.utils.BeanUtils;
 import com.hmall.common.utils.UserContext;
 import com.hmall.pay.domain.dto.PayApplyDTO;
 import com.hmall.pay.domain.dto.PayOrderFormDTO;
-import com.hmall.pay.domain.po.Order;
 import com.hmall.pay.domain.po.PayOrder;
 import com.hmall.pay.enums.PayStatus;
 import com.hmall.pay.mapper.PayOrderMapper;
@@ -93,6 +92,8 @@ public class PayOrderServiceImpl extends ServiceImpl<PayOrderMapper, PayOrder> i
             // 不存在支付单，说明是第一次，写入新的支付单并返回
             PayOrder payOrder = buildPayOrder(applyDTO);
             payOrder.setPayOrderNo(IdWorker.getId());
+            // 新添加一个id设置，添加支付用户ID，由于没有进行微服务设置，所以这里定死为1
+            payOrder.setBizUserId(1L);
             save(payOrder);
             return payOrder;
         }

@@ -6,6 +6,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 
 @FeignClient(value = "trade-service")
 public interface OrderClient {
-    @PutMapping("/{orderId}")
-    public void markOrderPaySuccess(@PathVariable("orderId") Long orderId);
+    @PutMapping("/orders/{orderId}")
+    void markOrderPaySuccess(@PathVariable("orderId") Long orderId);
 }

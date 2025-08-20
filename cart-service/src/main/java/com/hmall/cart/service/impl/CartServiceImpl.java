@@ -128,8 +128,12 @@ public class CartServiceImpl extends ServiceImpl<CartMapper, Cart> implements IC
     public void removeByItemIds(Collection<Long> itemIds) {
         // 1.构建删除条件，userId和itemId
         QueryWrapper<Cart> queryWrapper = new QueryWrapper<Cart>();
+//        queryWrapper.lambda()
+//                .eq(Cart::getUserId, UserContext.getUser())
+//                .in(Cart::getItemId, itemIds);
+        // 同样修改usercontext为特定值
         queryWrapper.lambda()
-                .eq(Cart::getUserId, UserContext.getUser())
+                .eq(Cart::getUserId, 1L)
                 .in(Cart::getItemId, itemIds);
         // 2.删除
         remove(queryWrapper);
