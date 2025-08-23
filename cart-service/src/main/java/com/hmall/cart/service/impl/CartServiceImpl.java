@@ -131,7 +131,7 @@ public class CartServiceImpl extends ServiceImpl<CartMapper, Cart> implements IC
 //        queryWrapper.lambda()
 //                .eq(Cart::getUserId, UserContext.getUser())
 //                .in(Cart::getItemId, itemIds);
-        // 同样修改usercontext为特定值
+        // 同样修改UserContext为特定值
         queryWrapper.lambda()
                 .eq(Cart::getUserId, 1L)
                 .in(Cart::getItemId, itemIds);
