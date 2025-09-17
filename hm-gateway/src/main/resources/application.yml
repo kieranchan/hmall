@@ -28,3 +28,5 @@ spring:
           uri: lb://pay-service
           predicates:
             - Path=/pay-orders/**
+      default-filters:
+        - PrintAny=1,2,3

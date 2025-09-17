@@ -5,11 +5,13 @@ import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
 import org.springframework.http.server.reactive.ServerHttpRequest;
+import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
 
+@Component
 public class PrintAnyGatewayFilterFactory  extends
         AbstractGatewayFilterFactory<PrintAnyGatewayFilterFactory.Config> {
     
@@ -22,6 +24,7 @@ public class PrintAnyGatewayFilterFactory  extends
         return (exchange, chain) -> {
             ServerHttpRequest request = exchange.getRequest();
             System.out.println("過濾器執行了");
+            
             return chain.filter(exchange);
         };
     }
