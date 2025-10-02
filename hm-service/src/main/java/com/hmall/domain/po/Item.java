@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
  * 商品表
  * </p>
  *
- * @author 虎哥
+ * @author  
  * @since 2023-05-05
  */
 @Data

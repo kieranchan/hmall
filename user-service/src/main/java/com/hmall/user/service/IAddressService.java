@@ -8,7 +8,7 @@ import com.hmall.user.domain.po.Address;
  *  服务类
  * </p>
  *
- * @author 虎哥
+ * @author  
  * @since 2023-05-05
  */
 public interface IAddressService extends IService<Address> {
