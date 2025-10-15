@@ -118,6 +118,9 @@ public class CartServiceImpl extends ServiceImpl<CartMapper, Cart> implements IC
             if (item == null) {
                 continue;
             }
+            // 需要添加新的价格、状态、库存
+            // 即 更新数据
+            // 从商品处 获取最新消息， 根据 购物车
             v.setNewPrice(item.getPrice());
             v.setStatus(item.getStatus());
             v.setStock(item.getStock());

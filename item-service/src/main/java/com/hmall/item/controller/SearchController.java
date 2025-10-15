@@ -35,6 +35,6 @@ public class SearchController {
                 .between(query.getMaxPrice() != null, Item::getPrice, query.getMinPrice(), query.getMaxPrice())
                 .page(query.toMpPage("update_time", false));
         // 封装并返回
-        return PageDTO.of(result, ItemDTO.class);
+            return PageDTO.of(result, ItemDTO.class);
     }
 }

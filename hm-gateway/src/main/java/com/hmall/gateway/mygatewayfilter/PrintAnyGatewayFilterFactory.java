@@ -12,25 +12,25 @@ import reactor.core.publisher.Mono;
 import java.util.List;
 
 @Component
-public class PrintAnyGatewayFilterFactory  extends
+public class PrintAnyGatewayFilterFactory extends
         AbstractGatewayFilterFactory<PrintAnyGatewayFilterFactory.Config> {
-    
-    PrintAnyGatewayFilterFactory(){
+
+    PrintAnyGatewayFilterFactory() {
         super(Config.class);
     }
-    
+
     @Override
     public GatewayFilter apply(Config config) {
         return (exchange, chain) -> {
             ServerHttpRequest request = exchange.getRequest();
             System.out.println("過濾器執行了");
-            
+
             return chain.filter(exchange);
         };
     }
-    
+
     @Data
-    static class Config{
+    static class Config {
         private String a;
         private String b;
         private String c;
@@ -38,7 +38,7 @@ public class PrintAnyGatewayFilterFactory  extends
 
     @Override
     public List<String> shortcutFieldOrder() {
-        return List.of("a","b","c");
+        return List.of("a", "b", "c");
     }
 
     @Override
