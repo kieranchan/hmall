@@ -7,6 +7,10 @@ spring:
     nacos:
       server-addr: 192.168.76.138:8848
     gateway:
+#      default-filters:
+#        - PrintAny=1,2,3
+#        - name: PrintAny
+#          args: { a: 1,b: 2,c: 3 }
       routes:
         - id: item-service # 路由规则id，自定义，唯一
           uri: lb://item-service # 路由的目标服务，lb代表负载均衡，会从注册中心拉取服务列表
@@ -28,5 +32,15 @@ spring:
           uri: lb://pay-service
           predicates:
             - Path=/pay-orders/**
-      default-filters:
-        - PrintAny=1,2,3
+hm:
+  jwt:
+    location: classpath:hmall.jks
+    alias: hmall
+    password: hmall123
+    token-t-tL: 3000000000m
+  auth:
+    exclude-paths:
+      - /search/**
+      - /users/login
+      - /items/**
+
