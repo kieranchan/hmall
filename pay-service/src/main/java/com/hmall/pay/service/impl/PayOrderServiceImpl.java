@@ -25,7 +25,7 @@ import java.time.LocalDateTime;
  * 支付订单 服务实现类
  * </p>
  *
- * @author  
+ * @author
  * @since 2023-05-16
  */
 @Service
@@ -93,7 +93,7 @@ public class PayOrderServiceImpl extends ServiceImpl<PayOrderMapper, PayOrder> i
             PayOrder payOrder = buildPayOrder(applyDTO);
             payOrder.setPayOrderNo(IdWorker.getId());
             // 新添加一个id设置，添加支付用户ID，由于没有进行微服务设置，所以这里定死为1
-            payOrder.setBizUserId(1L);
+            payOrder.setBizUserId(UserContext.getUser());
             save(payOrder);
             return payOrder;
         }
@@ -127,9 +127,9 @@ public class PayOrderServiceImpl extends ServiceImpl<PayOrderMapper, PayOrder> i
         // 2.初始化数据
         payOrder.setPayOverTime(LocalDateTime.now().plusMinutes(120L));
         payOrder.setStatus(PayStatus.WAIT_BUYER_PAY.getValue());
-//        payOrder.setBizUserId(UserContext.getUser());
         // 设置为用户1
-        payOrder.setBizUserId(1L);
+//        payOrder.setBizUserId(1L);
+        payOrder.setBizUserId(UserContext.getUser());
         return payOrder;
     }
 

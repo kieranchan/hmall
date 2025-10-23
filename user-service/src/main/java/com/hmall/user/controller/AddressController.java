@@ -50,8 +50,8 @@ public class AddressController {
     @GetMapping
     public List<AddressDTO> findMyAddresses() {
         // 1.查询列表
-//        List<Address> list = addressService.query().eq("user_id", UserContext.getUser()).list();
-        List<Address> list = addressService.query().eq("user_id", "1L").list();
+        List<Address> list = addressService.query().eq("user_id", UserContext.getUser()).list();
+//        List<Address> list = addressService.query().eq("user_id", "1L").list();
         // 2.判空
         if (CollUtils.isEmpty(list)) {
             return CollUtils.emptyList();

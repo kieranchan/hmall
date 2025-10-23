@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
  * 订单详情表 服务实现类
  * </p>
  *
- * @author  
+ * @author
  * @since 2023-05-05
  */
 @Service
@@ -45,8 +45,8 @@ public class CartServiceImpl extends ServiceImpl<CartMapper, Cart> implements IC
     @Override
     public void addItem2Cart(CartFormDTO cartFormDTO) {
         // 1.获取登录用户
-//        Long userId = UserContext.getUser();
-        Long userId = 1L;
+        Long userId = UserContext.getUser();
+//        Long userId = 1L;
 
         // 2.判断是否已经存在
         if (checkItemExists(cartFormDTO.getItemId(), userId)) {
@@ -69,7 +69,7 @@ public class CartServiceImpl extends ServiceImpl<CartMapper, Cart> implements IC
     @Override
     public List<CartVO> queryMyCarts() {
         // 1.查询我的购物车列表
-        List<Cart> carts = lambdaQuery().eq(Cart::getUserId, 1L /*TODO UserContext.getUser()*/).list();
+        List<Cart> carts = lambdaQuery().eq(Cart::getUserId, UserContext.getUser()).list();
         if (CollUtils.isEmpty(carts)) {
             return CollUtils.emptyList();
         }
@@ -111,7 +111,8 @@ public class CartServiceImpl extends ServiceImpl<CartMapper, Cart> implements IC
             throw new BadRequestException("购物车中商品不存在！");
         }
         // 3.转为 id 到 item的map
-        Map<Long, ItemDTO> itemMap = items.stream().collect(Collectors.toMap(ItemDTO::getId, Function.identity()));
+        Map<Long, ItemDTO> itemMap = items.stream()
+                .collect(Collectors.toMap(ItemDTO::getId, Function.identity()));
         // 4.写入vo
         for (CartVO v : vos) {
             ItemDTO item = itemMap.get(v.getItemId());
@@ -136,7 +137,7 @@ public class CartServiceImpl extends ServiceImpl<CartMapper, Cart> implements IC
 //                .in(Cart::getItemId, itemIds);
         // 同样修改UserContext为特定值
         queryWrapper.lambda()
-                .eq(Cart::getUserId, 1L)
+                .eq(Cart::getUserId, UserContext.getUser())
                 .in(Cart::getItemId, itemIds);
         // 2.删除
         remove(queryWrapper);

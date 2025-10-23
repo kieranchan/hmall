@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
  * 服务实现类
  * </p>
  *
- * @author  
+ * @author
  * @since 2023-05-05
  */
 @Service
@@ -67,8 +67,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         order.setTotalFee(total);
         // 1.5.其它属性
         order.setPaymentType(orderFormDTO.getPaymentType());
-//        order.setUserId(UserContext.getUser());// 有弹幕说需要将这里改成1L
-        order.setUserId(1L);// 有弹幕说需要将这里改成1L
+//        order.setUserId(1L);// 有弹幕说需要将这里改成1L
+        order.setUserId(UserContext.getUser());// 有弹幕说需要将这里改成1L
         order.setStatus(1);
         // 1.6.将Order写入数据库order表中
         save(order);
