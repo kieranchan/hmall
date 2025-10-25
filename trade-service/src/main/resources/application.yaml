@@ -42,6 +42,6 @@ knife4j:
         api-rule: package
         api-rule-resources:
           - com.hmall.trade.controller
-#feign:
-#  okhttp:
-#    enabled: true
+feign:
+  okhttp:
+    enabled: true

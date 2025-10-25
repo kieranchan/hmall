@@ -8,7 +8,7 @@ import com.hmall.common.utils.BeanUtils;
 import com.hmall.item.domain.dto.ItemDTO;
 import com.hmall.item.domain.dto.OrderDetailDTO;
 import com.hmall.item.domain.po.Item;
-import com.hmall.item.service.ItemService;
+import com.hmall.item.service.IItemService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +22,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ItemController {
 
-    private final ItemService itemService;
+    private final IItemService itemService;
 
     @ApiOperation("分页查询商品")
     @GetMapping("/page")

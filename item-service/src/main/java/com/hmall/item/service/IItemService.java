@@ -16,7 +16,7 @@ import java.util.List;
  * @author  
  * @since 2023-05-05
  */
-public interface ItemService extends IService<Item> {
+public interface IItemService extends IService<Item> {
 
     void deductStock(List<OrderDetailDTO> items);
 

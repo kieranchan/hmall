@@ -7,7 +7,7 @@ import com.hmall.common.domain.PageDTO;
 import com.hmall.item.domain.dto.ItemDTO;
 import com.hmall.item.domain.po.Item;
 import com.hmall.item.domain.query.ItemPageQuery;
-import com.hmall.item.service.ItemService;
+import com.hmall.item.service.IItemService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class SearchController {
 
-    private final ItemService itemService;
+    private final IItemService itemService;
 
     @ApiOperation("搜索商品")
     @GetMapping("/list")
