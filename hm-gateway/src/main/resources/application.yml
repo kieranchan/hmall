@@ -1,46 +1,59 @@
 server:
-  port: 8080
-spring:
-  application:
-    name: hm-gateway
-  cloud:
-    nacos:
-      server-addr: 192.168.76.138:8848
-    gateway:
-#      default-filters:
-#        - PrintAny=1,2,3
-#        - name: PrintAny
-#          args: { a: 1,b: 2,c: 3 }
-      routes:
-        - id: item-service # 路由规则id，自定义，唯一
-          uri: lb://item-service # 路由的目标服务，lb代表负载均衡，会从注册中心拉取服务列表
-          predicates: # 路由断言，判断当前请求是否符合当前规则，符合则路由到目标服务
-            - Path=/items/**,/search/** # 这里是以请求路径作为判断规则
-        - id: cart-service
-          uri: lb://cart-service
-          predicates:
-            - Path=/carts/**
-        - id: user-service
-          uri: lb://user-service
-          predicates:
-            - Path=/users/**,/addresses/**
-        - id: trade-service
-          uri: lb://trade-service
-          predicates:
-            - Path=/orders/**
-        - id: pay-service
-          uri: lb://pay-service
-          predicates:
-            - Path=/pay-orders/**
+  port: 8080 # 端口
 hm:
   jwt:
-    location: classpath:hmall.jks
-    alias: hmall
-    password: hmall123
-    token-t-tL: 3000000000m
+    location: classpath:hmall.jks # 秘钥地址
+    alias: hmall # 秘钥别名
+    password: hmall123 # 秘钥文件密码
+    tokenTTL: 300000000m # 登录有效期
   auth:
-    exclude-paths:
+    excludePaths: # 无需登录校验的路径
       - /search/**
       - /users/login
       - /items/**
-
+#server:
+#  port: 8080
+#spring:
+#  application:
+#    name: hm-gateway
+#  cloud:
+#    nacos:
+#      server-addr: 192.168.76.138:8848
+#    gateway:
+##      default-filters:
+##        - PrintAny=1,2,3
+##        - name: PrintAny
+##          args: { a: 1,b: 2,c: 3 }
+#      routes:
+#        - id: item-service # 路由规则id，自定义，唯一
+#          uri: lb://item-service # 路由的目标服务，lb代表负载均衡，会从注册中心拉取服务列表
+#          predicates: # 路由断言，判断当前请求是否符合当前规则，符合则路由到目标服务
+#            - Path=/items/**,/search/** # 这里是以请求路径作为判断规则
+#        - id: cart-service
+#          uri: lb://cart-service
+#          predicates:
+#            - Path=/carts/**
+#        - id: user-service
+#          uri: lb://user-service
+#          predicates:
+#            - Path=/users/**,/addresses/**
+#        - id: trade-service
+#          uri: lb://trade-service
+#          predicates:
+#            - Path=/orders/**
+#        - id: pay-service
+#          uri: lb://pay-service
+#          predicates:
+#            - Path=/pay-orders/**
+#hm:
+#  jwt:
+#    location: classpath:hmall.jks
+#    alias: hmall
+#    password: hmall123
+#    token-t-tL: 3000000000m
+#  auth:
+#    exclude-paths:
+#      - /search/**
+#      - /users/login
+#      - /items/**
+#
