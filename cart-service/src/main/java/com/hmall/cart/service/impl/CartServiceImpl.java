@@ -85,30 +85,10 @@ public class CartServiceImpl extends ServiceImpl<CartMapper, Cart> implements IC
     }
 
     private void handleCartItems(List<CartVO> vos) {
-        // 1.获取商品id TODO 处理商品信息
+        // 1.获取商品id TODO  处理商品信息
         Set<Long> itemIds = vos.stream().map(CartVO::getItemId).collect(Collectors.toSet());
         // 2.查询商品
         List<ItemDTO> items = itemClient.queryItemByIds(itemIds);
-        /*// 2.1 发现item-service服务的实例列表
-        List<ServiceInstance> instances = discoveryClient.getInstances("item-service");
-        // 2.2 负载均衡，挑选一个实例
-        ServiceInstance instance = instances.get(RandomUtil.randomInt(instances.size()));
-        // 2.3 发送请求，查询商品
-//        String join1 = CollUtils.join(itemIds, ",");// 查看输出
-//        Map<String, String> join2 = Map.of("ids", CollUtil.join(itemIds, ","));// 查看输出
-        ResponseEntity<List<ItemDTO>> response = restTemplate.exchange(
-//                "http://localhost:8081/items?ids={ids}",
-                instance.getUri()+"/items?ids={ids}",
-                HttpMethod.GET,
-                null,
-                new ParameterizedTypeReference<List<ItemDTO>>() {},
-                Map.of("ids", CollUtil.join(itemIds,","))
-        );
-        // 2.2 处理结果
-        List<ItemDTO> items = null;
-        if (response.getStatusCode().is2xxSuccessful()) {
-            items = response.getBody();
-        }*/
         // 2.3 查询失败，抛出异常
         if (CollUtils.isEmpty(items)) {
             throw new BadRequestException("购物车中商品不存在！");
