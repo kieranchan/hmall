@@ -3,6 +3,14 @@ server:
 feign:
   okhttp:
     enabled: true # 开启OKHttp连接池支持
+  sentinel:
+    enabled: true
+spring:
+  cloud:
+    sentinel:
+      transport:
+        dashboard: localhost:8090
+      http-method-specify: true
 hm:
   swagger:
     title: 交易服务接口文档
