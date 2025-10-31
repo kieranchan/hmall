@@ -1,4 +1,4 @@
-# 🛒 HMall - Microservices E-commerce Platform | 黑馬商城
+# 🛒 HMall - Microservices E-commerce Platform
 
 A distributed e-commerce platform built with Spring Cloud Alibaba microservices architecture, featuring high concurrency, scalability, and enterprise-grade performance.
 
