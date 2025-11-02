@@ -91,6 +91,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         return order.getId();
     }
 
+    // 修改訂單狀態
+    // 此處因爲需要進行異步操作，所以進行改造，需要在監聽器中調用
     @Override
     public void markOrderPaySuccess(Long orderId) {
         Order order = new Order();

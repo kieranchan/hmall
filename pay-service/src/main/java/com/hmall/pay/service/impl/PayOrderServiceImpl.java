@@ -16,8 +16,9 @@ import com.hmall.pay.mapper.PayOrderMapper;
 import com.hmall.pay.service.IPayOrderService;
 import io.seata.spring.annotation.GlobalTransactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
@@ -30,6 +31,7 @@ import java.time.LocalDateTime;
  * @since 2023-05-16
  */
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class PayOrderServiceImpl extends ServiceImpl<PayOrderMapper, PayOrder> implements IPayOrderService {
 
@@ -38,6 +40,8 @@ public class PayOrderServiceImpl extends ServiceImpl<PayOrderMapper, PayOrder> i
 
     //    private final IOrderService orderService;
     private final OrderClient orderClient;
+
+    private final RabbitTemplate rabbitTemplate;
 
     @Override
     public String applyPayOrder(PayApplyDTO applyDTO) {
@@ -72,7 +76,17 @@ public class PayOrderServiceImpl extends ServiceImpl<PayOrderMapper, PayOrder> i
         order.setStatus(2);
         order.setPayTime(LocalDateTime.now());
         orderService.updateById(order);*/
-        orderClient.markOrderPaySuccess(po.getBizOrderNo());
+//        orderClient.markOrderPaySuccess(po.getBizOrderNo());
+        // 改造 通知訂單狀態 業務，此處為生產者
+        // 發佈消息
+        String exchangeName = "pay.direct";
+        String routingKey = "pay.success";
+        Long bizOrderNo = po.getBizOrderNo();
+        try {
+            rabbitTemplate.convertAndSend(exchangeName, routingKey, bizOrderNo);
+        } catch (Exception e) {
+            log.error("支付成功的消息發送失敗，支付單id：{}，交易單id：{}", po.getId(), po.getBizOrderNo(), e);
+        }
     }
 
     public boolean markPayOrderSuccess(Long id, LocalDateTime successTime) {
