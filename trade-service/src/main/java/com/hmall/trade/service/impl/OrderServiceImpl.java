@@ -15,8 +15,9 @@ import com.hmall.trade.service.IOrderDetailService;
 import com.hmall.trade.service.IOrderService;
 import io.seata.spring.annotation.GlobalTransactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -34,6 +35,7 @@ import java.util.stream.Collectors;
  * @since 2023-05-05
  */
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements IOrderService {
 
@@ -42,6 +44,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     private final IOrderDetailService detailService;
     //    private final ICartService cartService;
     private final CartClient cartClient;
+    private final RabbitTemplate rabbitTemplate;
 
     @Override
 //    @Transactional
@@ -78,10 +81,19 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         List<OrderDetail> details = buildDetails(order.getId(), items, itemNumMap);
         detailService.saveBatch(details);
         // 3.清理购物车商品
-//        cartService.removeByItemIds(itemIds);
         // 進行異步改造
-        cartClient.deleteCartItemByIds(itemIds);
-
+        try {
+            String exchangeName = "trade.topic";
+            String routingKey = "order.create";
+//            rabbitTemplate.convertAndSend(exchangeName, routingKey, itemIds, message -> {
+//                // 因爲mq的傳遞是不帶有userId的，所以需要自己傳遞，使用請求頭的方式傳遞
+//                message.getMessageProperties().setHeader("userId", UserContext.getUser());
+//                return message;
+//            });
+            rabbitTemplate.convertAndSend(exchangeName,routingKey,itemIds);
+        } catch (Exception e) {
+            log.error("清理購物車的消息發送失敗，購物車中的商品id為：{}", itemIds, e);
+        }
         // 4.扣减库存
         try {
 //            itemService.deductStock(detailDTOS);
