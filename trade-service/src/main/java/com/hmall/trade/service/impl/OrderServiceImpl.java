@@ -79,6 +79,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         detailService.saveBatch(details);
         // 3.清理购物车商品
 //        cartService.removeByItemIds(itemIds);
+        // 進行異步改造
         cartClient.deleteCartItemByIds(itemIds);
 
         // 4.扣减库存

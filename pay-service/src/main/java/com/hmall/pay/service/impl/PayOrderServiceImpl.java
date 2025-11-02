@@ -79,10 +79,10 @@ public class PayOrderServiceImpl extends ServiceImpl<PayOrderMapper, PayOrder> i
 //        orderClient.markOrderPaySuccess(po.getBizOrderNo());
         // 改造 通知訂單狀態 業務，此處為生產者
         // 發佈消息
-        String exchangeName = "pay.direct";
-        String routingKey = "pay.success";
-        Long bizOrderNo = po.getBizOrderNo();
         try {
+            String exchangeName = "pay.direct";
+            String routingKey = "pay.success";
+            Long bizOrderNo = po.getBizOrderNo();
             rabbitTemplate.convertAndSend(exchangeName, routingKey, bizOrderNo);
         } catch (Exception e) {
             log.error("支付成功的消息發送失敗，支付單id：{}，交易單id：{}", po.getId(), po.getBizOrderNo(), e);
