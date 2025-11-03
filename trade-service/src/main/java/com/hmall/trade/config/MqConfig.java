@@ -1,7 +1,10 @@
-package com.hmall.cart.config;
+package com.hmall.trade.config;
 
 import com.hmall.common.utils.UserContext;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.aopalliance.aop.Advice;
+import org.springframework.amqp.core.ReturnedMessage;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -10,12 +13,17 @@ import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import javax.annotation.PostConstruct;
+
 /**
  * 通過消息隊列無感傳遞user-id
  */
+@Slf4j
 @Configuration
-public class MqUserContextConfig {
+@AllArgsConstructor
+public class MqConfig {
 
+    // ***********************傳遞user-id
     public static final String USER_ID_HEADER = "user-id";
 
     // 消息格式轉換器，轉化成統一格式
@@ -69,7 +77,7 @@ public class MqUserContextConfig {
     public SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory(
             ConnectionFactory cf,
             MessageConverter mc,
-            Advice userContextAdvice) {
+            org.aopalliance.aop.Advice userContextAdvice) {
 
         SimpleRabbitListenerContainerFactory f = new SimpleRabbitListenerContainerFactory();
         f.setConnectionFactory(cf);
@@ -80,6 +88,7 @@ public class MqUserContextConfig {
         // f.setPrefetchCount(50);
         return f;
     }
+
 
 
 }

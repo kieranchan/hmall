@@ -1,4 +1,4 @@
-package com.hmall.pay.config;
+package com.hmall.cart.config;
 
 import com.hmall.common.utils.UserContext;
 import org.aopalliance.aop.Advice;
@@ -14,7 +14,7 @@ import org.springframework.context.annotation.Configuration;
  * 通過消息隊列無感傳遞user-id
  */
 @Configuration
-public class MqUserContextConfig {
+public class MqConfig {
 
     public static final String USER_ID_HEADER = "user-id";
 

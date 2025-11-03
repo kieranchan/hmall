@@ -1,4 +1,4 @@
-package com.hmall.trade.config;
+package com.hmall.pay.config;
 
 import com.hmall.common.utils.UserContext;
 import org.aopalliance.aop.Advice;
@@ -14,7 +14,7 @@ import org.springframework.context.annotation.Configuration;
  * 通過消息隊列無感傳遞user-id
  */
 @Configuration
-public class MqUserContextConfig {
+public class MqConfig {
 
     public static final String USER_ID_HEADER = "user-id";
 
@@ -69,7 +69,7 @@ public class MqUserContextConfig {
     public SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory(
             ConnectionFactory cf,
             MessageConverter mc,
-            org.aopalliance.aop.Advice userContextAdvice) {
+            Advice userContextAdvice) {
 
         SimpleRabbitListenerContainerFactory f = new SimpleRabbitListenerContainerFactory();
         f.setConnectionFactory(cf);
