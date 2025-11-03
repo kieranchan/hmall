@@ -1,10 +1,8 @@
 package com.hmall.trade.config;
 
 import com.hmall.common.utils.UserContext;
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aopalliance.aop.Advice;
-import org.springframework.amqp.core.ReturnedMessage;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -13,14 +11,11 @@ import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import javax.annotation.PostConstruct;
-
 /**
- * 通過消息隊列無感傳遞user-id
+ * 消息隊列配置
  */
 @Slf4j
 @Configuration
-@AllArgsConstructor
 public class MqConfig {
 
     // ***********************傳遞user-id
@@ -44,6 +39,23 @@ public class MqConfig {
             }
             return message;
         });
+        // 設置returnCallBack
+        rabbitTemplate.setReturnsCallback(returned -> {
+            log.error("觸發return callback, exchange={}, routingKey={}, replyText={}",
+                    returned.getExchange(), returned.getRoutingKey(), returned.getReplyText());
+        });
+        // 若希望 broker 返回无路由消息，确保 mandatory=true
+        // 設置ConfirmCallback
+        rabbitTemplate.setConfirmCallback((correlationData, ack, cause) -> {
+            String id = correlationData == null ? null : correlationData.getId();
+            if (ack) {
+                log.info("[global-confirm] message {} acked by broker", id);
+            } else {
+                log.error("[global-confirm] message {} NOT acked, cause={}", id, cause);
+                // 可以做通用警告，度量
+            }
+        });
+        rabbitTemplate.setMandatory(true);
         return rabbitTemplate;
     }
 
@@ -88,7 +100,6 @@ public class MqConfig {
         // f.setPrefetchCount(50);
         return f;
     }
-
 
 
 }
