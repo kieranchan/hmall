@@ -1,6 +1,7 @@
 package com.hmall.trade.config;
 
 import com.hmall.common.utils.UserContext;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aopalliance.aop.Advice;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
@@ -8,6 +9,7 @@ import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.amqp.support.converter.MessageConverter;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -16,6 +18,8 @@ import org.springframework.context.annotation.Configuration;
  */
 @Slf4j
 @Configuration
+@AllArgsConstructor
+@EnableConfigurationProperties(MandatoryProperties.class)
 public class MqConfig {
 
     // ***********************傳遞user-id
@@ -29,7 +33,7 @@ public class MqConfig {
 
     // 全局發送消息之前吧user-id放入Header
     @Bean
-    public RabbitTemplate rabbitTemplate(ConnectionFactory cf, MessageConverter mc) {
+    public RabbitTemplate rabbitTemplate(ConnectionFactory cf, MessageConverter mc, MandatoryProperties mandatoryProperties) {
         RabbitTemplate rabbitTemplate = new RabbitTemplate(cf);
         rabbitTemplate.setMessageConverter(mc);
         rabbitTemplate.setBeforePublishPostProcessors(message -> {
@@ -40,10 +44,8 @@ public class MqConfig {
             return message;
         });
         // 設置returnCallBack
-        rabbitTemplate.setReturnsCallback(returned -> {
-            log.error("觸發return callback, exchange={}, routingKey={}, replyText={}",
-                    returned.getExchange(), returned.getRoutingKey(), returned.getReplyText());
-        });
+        rabbitTemplate.setReturnsCallback(returned -> log.error("觸發return callback, exchange={}, routingKey={}, replyText={}",
+                returned.getExchange(), returned.getRoutingKey(), returned.getReplyText()));
         // 設置ConfirmCallback
         rabbitTemplate.setConfirmCallback((correlationData, ack, cause) -> {
             String id = correlationData == null ? null : correlationData.getId();
@@ -55,11 +57,11 @@ public class MqConfig {
             }
         });
         // 若希望 broker 返回无路由消息，确保 mandatory=true
-        rabbitTemplate.setMandatory(true);
+        rabbitTemplate.setMandatory(mandatoryProperties.isMandatory());
         return rabbitTemplate;
     }
 
-    // 接收隊列消息之前將userId放入到UserContext中
+    //     接收隊列消息之前將userId放入到UserContext中
     @Bean
     public Advice userContextAdvice() {
         return (org.aopalliance.intercept.MethodInterceptor) invocation -> {
