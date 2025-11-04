@@ -44,7 +44,6 @@ public class MqConfig {
             log.error("觸發return callback, exchange={}, routingKey={}, replyText={}",
                     returned.getExchange(), returned.getRoutingKey(), returned.getReplyText());
         });
-        // 若希望 broker 返回无路由消息，确保 mandatory=true
         // 設置ConfirmCallback
         rabbitTemplate.setConfirmCallback((correlationData, ack, cause) -> {
             String id = correlationData == null ? null : correlationData.getId();
@@ -55,6 +54,7 @@ public class MqConfig {
                 // 可以做通用警告，度量
             }
         });
+        // 若希望 broker 返回无路由消息，确保 mandatory=true
         rabbitTemplate.setMandatory(true);
         return rabbitTemplate;
     }

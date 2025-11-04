@@ -1,6 +1,5 @@
 package com.hmall.trade;
 
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.amqp.rabbit.connection.CorrelationData;
@@ -27,9 +26,9 @@ public class PublisherTest {
 
             @Override
             public void onSuccess(CorrelationData.Confirm result) {
-                if(result.isAck()){ // result.isAck()，boolean类型，true代表ack回执，false 代表 nack回执
+                if (result.isAck()) { // result.isAck()，boolean类型，true代表ack回执，false 代表 nack回执
                     log.debug("发送消息成功，收到 ack!");
-                }else{ // result.getReason()，String类型，返回nack时的异常描述
+                } else { // result.getReason()，String类型，返回nack时的异常描述
                     log.error("发送消息失败，收到 nack, reason : {}", result.getReason());
                 }
             }
