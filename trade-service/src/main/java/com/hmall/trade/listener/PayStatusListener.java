@@ -16,6 +16,15 @@ public class PayStatusListener {
 
     private final IOrderService orderService;
 
+    //    @RabbitListener(bindings = @QueueBinding(
+//            value = @Queue(name = "trade.pay.success.queue",
+//                    durable = "true",
+//                    arguments = {
+//                            @Argument(name = "x-queue-mode", value = "lazy")
+//                    }),
+//            exchange = @Exchange(name = "pay.direct"),
+//            key = {"pay.success"}
+//    ))
     @RabbitListener(bindings = @QueueBinding(
             value = @Queue(name = "trade.pay.success.queue"),
             exchange = @Exchange(name = "pay.direct"),

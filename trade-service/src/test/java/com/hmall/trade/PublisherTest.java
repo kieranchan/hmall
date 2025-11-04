@@ -2,6 +2,7 @@ package com.hmall.trade;
 
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
+import org.springframework.amqp.rabbit.annotation.*;
 import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,4 +36,24 @@ public class PublisherTest {
         });
         rabbitTemplate.convertAndSend("hmall.direct", "wrong", "hello", cd);
     }
+
+    @Test
+    @RabbitListener(bindings = @QueueBinding(
+            value = @Queue(name = "test.lazy.queue",
+                    durable = "true",
+                    arguments = @Argument(name = "x-queue-mode", value = "lazy")
+            ),
+            exchange = @Exchange(name = "lazy.queue.direct"),
+            key = {"pay"}
+    ))
+    public void listerLazyQueue() {
+        log.info("監聽成功！");
+    }
+
+    @Test
+    public void sentMessageToLazyQueue(){
+        rabbitTemplate.convertAndSend("lazy.queue.direct","pay","1");
+    }
+
+
 }
