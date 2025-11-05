@@ -90,7 +90,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 //                message.getMessageProperties().setHeader("userId", UserContext.getUser());
 //                return message;
 //            });
-            rabbitTemplate.convertAndSend(exchangeName,routingKey,itemIds);
+            rabbitTemplate.convertAndSend(exchangeName, routingKey, itemIds);
         } catch (Exception e) {
             log.error("清理購物車的消息發送失敗，購物車中的商品id為：{}", itemIds, e);
         }
@@ -108,11 +108,24 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     // 此處因爲需要進行異步操作，所以進行改造，需要在監聽器中調用
     @Override
     public void markOrderPaySuccess(Long orderId) {
-        Order order = new Order();
-        order.setId(orderId);
-        order.setStatus(2);
-        order.setPayTime(LocalDateTime.now());
-        updateById(order);
+        // 通過業務判斷檢查冪等性，但是如下面這麽寫的話就有可能發生綫程問題
+//        Order orderById = getById(orderId);
+//        if (orderById == null || orderById.getStatus() != 1) {
+//            return;
+//        }
+        // 實際的更新部分
+        // UPDATE `order` SET status = ? , pay_time = ? WHERE id = ? AND status = 1
+        lambdaUpdate()
+                .set(Order::getPayTime,LocalDateTime.now())
+                .set(Order::getStatus,2)
+                .eq(Order::getId,orderId)
+                .eq(Order::getStatus,1)// 重點在這一步，在更新時同時判斷status
+                .update();
+//        Order order = new Order();
+//        order.setId(orderId);
+//        order.setStatus(2);
+//        order.setPayTime(LocalDateTime.now());
+//        updateById(order);
     }
 
     private List<OrderDetail> buildDetails(Long orderId, List<ItemDTO> items, Map<Long, Integer> numMap) {
