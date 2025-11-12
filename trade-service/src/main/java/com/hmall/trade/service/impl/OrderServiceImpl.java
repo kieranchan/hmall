@@ -7,6 +7,7 @@ import com.hmall.api.domain.dto.ItemDTO;
 import com.hmall.api.domain.dto.OrderDetailDTO;
 import com.hmall.common.exception.BadRequestException;
 import com.hmall.common.utils.UserContext;
+import com.hmall.trade.constants.MQConstants;
 import com.hmall.trade.domain.dto.OrderFormDTO;
 import com.hmall.trade.domain.po.Order;
 import com.hmall.trade.domain.po.OrderDetail;
@@ -101,6 +102,20 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         } catch (Exception e) {
             throw new RuntimeException("库存不足！");
         }
+        // 5.發送延遲消息，檢查訂單超時
+        try {
+            rabbitTemplate.convertAndSend(
+                    MQConstants.DELAY_EXCHANGE_NAME,
+                    MQConstants.DELAY_ROUTING_KEY,
+                    order.getId(),
+                    message -> {
+                        message.getMessageProperties().setDelay(10000);// 设置10秒的超时时间
+                        return message;
+                    }
+            );
+        } catch (Exception e) {
+            log.error("檢查訂單超時失敗，訂單id為：{}", order.getId());
+        }
         return order.getId();
     }
 
@@ -108,6 +123,11 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     // 此處因爲需要進行異步操作，所以進行改造，需要在監聽器中調用
     @Override
     public void markOrderPaySuccess(Long orderId) {
+//        Order order = new Order();
+//        order.setId(orderId);
+//        order.setStatus(2);
+//        order.setPayTime(LocalDateTime.now());
+//        updateById(order);
         // 通過業務判斷檢查冪等性，但是如下面這麽寫的話就有可能發生綫程問題
 //        Order orderById = getById(orderId);
 //        if (orderById == null || orderById.getStatus() != 1) {
@@ -116,16 +136,21 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         // 實際的更新部分
         // UPDATE `order` SET status = ? , pay_time = ? WHERE id = ? AND status = 1
         lambdaUpdate()
-                .set(Order::getPayTime,LocalDateTime.now())
-                .set(Order::getStatus,2)
-                .eq(Order::getId,orderId)
-                .eq(Order::getStatus,1)// 重點在這一步，在更新時同時判斷status
+                .set(Order::getPayTime, LocalDateTime.now())
+                .set(Order::getStatus, 2)
+                .eq(Order::getId, orderId)
+                .eq(Order::getStatus, 1)// 重點在這一步，在更新時同時判斷status
                 .update();
-//        Order order = new Order();
-//        order.setId(orderId);
-//        order.setStatus(2);
-//        order.setPayTime(LocalDateTime.now());
-//        updateById(order);
+    }
+
+    /**
+     * 取消訂單，返回庫存
+     *
+     * @param orderId
+     */
+    @Override
+    public void cancelOrder(Long orderId) {
+
     }
 
     private List<OrderDetail> buildDetails(Long orderId, List<ItemDTO> items, Map<Long, Integer> numMap) {
