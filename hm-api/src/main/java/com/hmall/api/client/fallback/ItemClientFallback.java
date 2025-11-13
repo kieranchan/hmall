@@ -10,6 +10,7 @@ import org.springframework.cloud.openfeign.FallbackFactory;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 public class ItemClientFallback implements FallbackFactory<ItemClient> {
@@ -26,7 +27,13 @@ public class ItemClientFallback implements FallbackFactory<ItemClient> {
             @Override
             public void deductStock(List<OrderDetailDTO> items) {
                 // 库存扣减业务需要触发事务回滚，查询失败，抛出异常
+                log.info("库存扣减业务需要触发事务回滚，查询失败！");
                 throw new BizIllegalException(cause);
+            }
+
+            @Override
+            public void restockItemByItemIdsAndNums(List<OrderDetailDTO> items) {
+                log.info("恢復庫存遠程調用失敗！");
             }
         };
     }

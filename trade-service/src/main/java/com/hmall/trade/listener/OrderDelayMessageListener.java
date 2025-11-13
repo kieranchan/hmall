@@ -36,7 +36,7 @@ public class OrderDelayMessageListener {
             key = MQConstants.DELAY_ROUTING_KEY
     ))
     public void listenOrderDelayMessage(Long orderId) {
-
+        log.info("已過時！");
         // 1. 获取OrderId
         Order order = orderService.getById(orderId);
         // 判断订单是否存在
@@ -54,8 +54,8 @@ public class OrderDelayMessageListener {
         }else {
             // 为null，或者未支付
             // 4. 取消訂單，返回庫存
+            log.info("開始取消訂單，返回庫存！");
             orderService.cancelOrder(orderId);
-
         }
     }
 }

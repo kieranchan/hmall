@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @Api(tags = "商品管理相关接口")
 @RestController
@@ -82,5 +83,11 @@ public class ItemController {
     @PutMapping("/stock/deduct")
     public void deductStock(@RequestBody List<OrderDetailDTO> items){
         itemService.deductStock(items);
+    }
+
+    @ApiOperation("根據商品id和數量恢復庫存")
+    @PutMapping("/restock")
+    public void restockItemByItemIdsAndNums(@RequestBody List<OrderDetailDTO> items){
+        itemService.restockItemByItemIdsAndNums(items);
     }
 }

@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 //@FeignClient(value = "item-service", configuration = DefaultFeignConfig.class)
 @FeignClient(value = "item-service",
@@ -22,4 +23,7 @@ public interface ItemClient {
 
     @PutMapping("items/stock/deduct")
     void deductStock(@RequestBody List<OrderDetailDTO> items);
+
+    @PutMapping("items/restock")
+    void restockItemByItemIdsAndNums(@RequestBody List<OrderDetailDTO> items);
 }

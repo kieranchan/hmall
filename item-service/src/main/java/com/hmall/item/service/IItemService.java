@@ -7,6 +7,7 @@ import com.hmall.item.domain.po.Item;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -21,4 +22,6 @@ public interface IItemService extends IService<Item> {
     void deductStock(List<OrderDetailDTO> items);
 
     List<ItemDTO> queryItemByIds(Collection<Long> ids);
+
+    void restockItemByItemIdsAndNums(List<OrderDetailDTO> items);
 }

@@ -6,11 +6,13 @@ import com.hmall.api.client.ItemClient;
 import com.hmall.api.domain.dto.ItemDTO;
 import com.hmall.api.domain.dto.OrderDetailDTO;
 import com.hmall.common.exception.BadRequestException;
+import com.hmall.common.utils.BeanUtils;
 import com.hmall.common.utils.UserContext;
 import com.hmall.trade.constants.MQConstants;
 import com.hmall.trade.domain.dto.OrderFormDTO;
 import com.hmall.trade.domain.po.Order;
 import com.hmall.trade.domain.po.OrderDetail;
+import com.hmall.trade.mapper.OrderDetailMapper;
 import com.hmall.trade.mapper.OrderMapper;
 import com.hmall.trade.service.IOrderDetailService;
 import com.hmall.trade.service.IOrderService;
@@ -21,10 +23,7 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -46,6 +45,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     //    private final ICartService cartService;
     private final CartClient cartClient;
     private final RabbitTemplate rabbitTemplate;
+    private final OrderDetailMapper orderDetailMapper;
 
     @Override
 //    @Transactional
@@ -144,13 +144,36 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     }
 
     /**
-     * 取消訂單，返回庫存
+     * 超時訂單
      *
      * @param orderId
      */
     @Override
+//    @GlobalTransactional
     public void cancelOrder(Long orderId) {
-
+        // 1. 将订单状态修改为已关闭
+        Order order = getById(orderId);
+        // 1.1 判斷訂單是否存在
+        if (order == null || order.getStatus() != 1) {
+            // 1.2 不存在則，抛出异常，订单不存在
+            log.info("订单不存在或已支付");
+            return;
+        }
+        // 1.3 存在就更改訂單狀態為已關閉
+        lambdaUpdate()
+                .set(Order::getStatus, 5)
+                .set(Order::getCloseTime, LocalDateTime.now())
+                .set(Order::getUpdateTime, LocalDateTime.now())
+                .eq(Order::getId, orderId)
+                .ne(Order::getStatus, 5)
+                .update();
+        // 2. 恢复订单中已经扣除的库存
+        // 獲取orderId的所有orderDetail
+        List<OrderDetail> details = detailService.lambdaQuery().eq(OrderDetail::getOrderId, orderId).list();
+        List<OrderDetailDTO> items = BeanUtils.copyList(details, OrderDetailDTO.class);
+        // 3. 恢复库存需要去商品服务中恢复，需要传递商品id，数量
+        // 有bug，會觸發fallback
+        itemClient.restockItemByItemIdsAndNums(items);
     }
 
     private List<OrderDetail> buildDetails(Long orderId, List<ItemDTO> items, Map<Long, Integer> numMap) {
