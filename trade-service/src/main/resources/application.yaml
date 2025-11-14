@@ -14,7 +14,7 @@ spring:
   rabbitmq:
     connection-timeout: 1s # 设置MQ的连接超时时间
     publisher-confirm-type: correlated # 开启publisher confirm机制，并设置confirm类型
-    publisher-returns: false # 开启publisher return机制
+    publisher-returns: true # 开启publisher return机制
     listener: # 消費者
       simple:
         acknowledge-mode: none # 消費者確認機制。none、manual、auto（在消費者端生效）
@@ -25,7 +25,7 @@ spring:
           max-attempts: 3 # 最大重试次数
           stateless: true # 失敗重試機制：【true无状态；false有状态。如果业务中包含事务，这里改为false】
     template: # 生產者
-      mandatory: false
+      mandatory: true
       retry:
         enabled: true # 开启超时重试机制
         initial-interval: 1000ms # 失败后的初始等待时间
