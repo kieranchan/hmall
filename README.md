@@ -23,30 +23,55 @@ A distributed e-commerce platform built with Spring Cloud Alibaba microservices 
 
 ## 🏗️ Microservices Architecture | 微服務架構
 
-```
-                    ┌─────────────────────┐
-                    │   Gateway Service   │
-                    │     (Route & LB)    │
-                    └──────────┬──────────┘
-                               │
-                    ┌──────────▼──────────┐
-                    │   Registry Center   │
-                    │      (Nacos)        │
-                    └─────────────────────┘
-                               │
-        ┌──────────┬───────────┼───────────┬──────────┐
-        ▼          ▼           ▼           ▼          ▼
-   ┌─────────┐┌─────────┐┌─────────┐┌─────────┐┌─────────┐
-   │  User   ││Product  ││  Cart   ││ Order   ││Payment  │
-   │Service  ││Service  ││Service  ││Service  ││Service  │
-   └─────────┘└─────────┘└─────────┘└─────────┘└─────────┘
-        │          │           │           │          │
-   ┌────┼──────────┼───────────┼───────────┼──────────┼────┐
-   ▼    ▼          ▼           ▼           ▼          ▼    ▼
-┌─────────┐  ┌─────────┐  ┌─────────┐  ┌─────────┐  ┌─────────┐
-│  MySQL  │  │  Redis  │  │RabbitMQ │  │   ES    │  │  OSS    │
-│Database │  │  Cache  │  │ Queue   │  │ Search  │  │Storage  │
-└─────────┘  └─────────┘  └─────────┘  └─────────┘  └─────────┘
+```mermaid
+flowchart LR
+%% 客戶端
+    subgraph ClientSide["Client"]
+        Web["Web 前端"]
+        Mobile["移動端"]
+    end
+%% Gateway
+    GW["hm-gateway\nAPI Gateway"]
+    Web --> GW
+    Mobile --> GW
+%% 基礎設施
+    subgraph Infra["Infrastructure"]
+        Nacos["Nacos\n註冊中心 / 配置中心"]
+        DB["MySQL 資料庫"]
+        MQ["RabbitMQ 消息隊列"]
+    end
+%% 業務服務
+    subgraph Services["Business Services"]
+        direction LR
+        User["user-service\n用戶服務"]
+        Item["item-service\n商品服務"]
+        Cart["cart-service\n購物車服務"]
+        Trade["trade-service\n訂單 / 交易服務"]
+        Pay["pay-service\n支付服務"]
+    end
+%% Gateway 轉發流量
+    GW --> User
+    GW --> Item
+    GW --> Cart
+    GW --> Trade
+    GW --> Pay
+%% Nacos 註冊中心
+    GW --- Nacos
+    User --- Nacos
+    Item --- Nacos
+    Cart --- Nacos
+    Trade --- Nacos
+    Pay --- Nacos
+%% 數據庫
+    User --> DB
+    Item --> DB
+    Cart --> DB
+    Trade --> DB
+    Pay --> DB
+%% MQ（如果你暫時未用，可以刪下面三行）
+    Trade <--> MQ
+    Pay <--> MQ
+   
 ```
 
 ## 🛠️ Technology Stack | 技術棧
@@ -63,7 +88,6 @@ A distributed e-commerce platform built with Spring Cloud Alibaba microservices 
 ### **Data & Messaging | 數據與消息**
 
 -   **MySQL 8.0** - Primary Database
--   **Redis 6.2** - Distributed Cache & Session Store
 -   **RabbitMQ 3.9** - Message Queue & Event Streaming
 -   **Elasticsearch 7.17** - Full-text Search Engine
 -   **MyBatis Plus 3.5** - ORM Framework
@@ -88,7 +112,6 @@ Environment Requirements:
 
 Infrastructure Services:
   - MySQL: 8.0+
-  - Redis: 6.2+
   - RabbitMQ: 3.9+
   - Elasticsearch: 7.17+
   - Nacos: 2.2.1+
@@ -174,7 +197,6 @@ Infrastructure Services:
 
 -   **Features**: Registration, Authentication, Profile Management
 -   **Database**: user, user_profile, user_address
--   **Cache Strategy**: Redis for session management
 -   **Security**: JWT token + BCrypt encryption
 
 ### **📦 Product Service | 商品服務**
@@ -182,12 +204,10 @@ Infrastructure Services:
 -   **Features**: Catalog Management, Inventory Tracking, Price Engine
 -   **Database**: product, category, brand, inventory
 -   **Search**: Elasticsearch integration for full-text search
--   **Cache**: Redis for hot product data
 
 ### **🛒 Cart Service | 購物車服務**
 
 -   **Features**: Cart Management, Session Sync, Batch Operations
--   **Storage**: Redis-based distributed cart
 -   **Sync**: Real-time synchronization across devices
 -   **Optimization**: Cart merge for logged-in users
 
@@ -216,7 +236,7 @@ Infrastructure Services:
 
 ### **🚀 Caching Strategy | 緩存策略**
 
--   **Multi-level Caching**: L1 (Local) + L2 (Redis) + L3 (Database)
+-   **Multi-level Caching**: L1 (Local) L2 (Database)
 -   **Cache Warming**: Preload hot data during startup
 -   **Cache Invalidation**: Event-driven cache refresh
 -   **Performance Gain**: 80% reduction in database queries
@@ -294,25 +314,7 @@ spec:
         - containerPort: 8081
 ```
 
-## 📋 Roadmap | 发展路线图
 
-### **Phase 1: Core Features** ✅
-
--   [x] Basic e-commerce functionality
--   [x] Microservices architecture setup
--   [x] User management and authentication
-
-### **Phase 2: Advanced Features** 🔄
-
--   [x] AI-powered product recommendations
--   [x] Real-time chat customer service
--   [x] Advanced analytics and reporting
-
-### **Phase 3: Scale & Optimization** 📅
-
--   [ ] Multi-tenant architecture
--   [ ] Global CDN integration
--   [ ] Machine learning for fraud detection
 
 ## 🤝 Contributing | 贡献指南
 
