@@ -7,7 +7,6 @@ A distributed e-commerce platform built with Spring Cloud Alibaba microservices 
 ### 🛍️ **Customer Experience | 用戶體驗**
 
 -   **Product Catalog** | 商品目錄：Multi-category browsing with advanced filtering
--   **Smart Search** | 智能搜索：Elasticsearch-powered full-text search with auto-complete
 -   **Shopping Cart** | 購物車：Real-time cart synchronization across devices
 -   **Secure Checkout** | 安全結算：Multiple payment gateways with fraud detection
 -   **Order Tracking** | 訂單追蹤：Real-time delivery status and notifications
@@ -89,7 +88,6 @@ flowchart LR
 
 -   **MySQL 8.0** - Primary Database
 -   **RabbitMQ 3.9** - Message Queue & Event Streaming
--   **Elasticsearch 7.17** - Full-text Search Engine
 -   **MyBatis Plus 3.5** - ORM Framework
 
 ### **DevOps & Monitoring | 運維監控**
@@ -113,7 +111,6 @@ Environment Requirements:
 Infrastructure Services:
   - MySQL: 8.0+
   - RabbitMQ: 3.9+
-  - Elasticsearch: 7.17+
   - Nacos: 2.2.1+
 ```
 
@@ -142,9 +139,7 @@ Infrastructure Services:
     # Import database schema and data
     mysql -h localhost -P 3306 -u root -p hmall < sql/hmall.sql
     
-    # Initialize Elasticsearch indices
-    curl -X PUT "localhost:9200/products" -H 'Content-Type: application/json' -d @config/es-mapping.json
-    ```
+
 
 4.  **Configuration | 服務配置**
 
@@ -203,7 +198,6 @@ Infrastructure Services:
 
 -   **Features**: Catalog Management, Inventory Tracking, Price Engine
 -   **Database**: product, category, brand, inventory
--   **Search**: Elasticsearch integration for full-text search
 
 ### **🛒 Cart Service | 購物車服務**
 
