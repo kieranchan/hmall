@@ -222,7 +222,7 @@ Infrastructure Services:
 
 ### **⚡ High Concurrency | 高併發處理**
 
--   **Load Balancing**: Ribbon + Gateway for traffic distribution
+-   **Load Balancing**: Spring Cloud LoadBalancer + Gateway for traffic distribution
 -   **Connection Pooling**: HikariCP with optimized settings
 -   **Async Processing**: CompletableFuture for non-blocking operations
 -   **Result**: Support for 10,000+ concurrent users
