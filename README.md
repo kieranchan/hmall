@@ -88,7 +88,7 @@ flowchart LR
 
 -   **MySQL 8.0** - Primary Database
 -   **RabbitMQ 3.9** - Message Queue & Event Streaming
--   **MyBatis Plus 3.5** - ORM Framework
+-   **MyBatis Plus 3.4.3** - ORM Framework
 
 ### **DevOps & Monitoring | 運維監控**
 
@@ -119,7 +119,7 @@ Infrastructure Services:
 1.  **Clone Project | 克隆項目**
 
     ```bash
-    git clone https://github.com/DamonKima/hmall.git
+    git clone https://github.com/kieranchan/hmall.git
     cd hmall
     ```
 
@@ -138,8 +138,7 @@ Infrastructure Services:
     ```bash
     # Import database schema and data
     mysql -h localhost -P 3306 -u root -p hmall < sql/hmall.sql
-    
-
+    ```
 
 4.  **Configuration | 服務配置**
 
@@ -168,12 +167,12 @@ Infrastructure Services:
     cd nacos && sh startup.sh -m standalone
     
     # Start each microservice
-    java -jar gateway-service/target/gateway-service.jar
+    java -jar hm-gateway/target/hm-gateway.jar
     java -jar user-service/target/user-service.jar
-    java -jar product-service/target/product-service.jar
+    java -jar item-service/target/item-service.jar
     java -jar cart-service/target/cart-service.jar
-    java -jar order-service/target/order-service.jar
-    java -jar payment-service/target/payment-service.jar
+    java -jar trade-service/target/trade-service.jar
+    java -jar pay-service/target/pay-service.jar
     ```
 
 6.  **Verify Deployment | 驗證部署**
@@ -194,10 +193,10 @@ Infrastructure Services:
 -   **Database**: user, user_profile, user_address
 -   **Security**: JWT token + BCrypt encryption
 
-### **📦 Product Service | 商品服務**
+### **📦 Item Service | 商品服務**
 
 -   **Features**: Catalog Management, Inventory Tracking, Price Engine
--   **Database**: product, category, brand, inventory
+-   **Database**: item, category, brand, inventory
 
 ### **🛒 Cart Service | 購物車服務**
 
@@ -205,10 +204,10 @@ Infrastructure Services:
 -   **Sync**: Real-time synchronization across devices
 -   **Optimization**: Cart merge for logged-in users
 
-### **📋 Order Service | 訂單服務**
+### **📋 Trade Service | 訂單服務**
 
 -   **Features**: Order Processing, Status Tracking, Workflow Management
--   **Database**: orders, order_items, order_log
+-   **Database**: order, order_detail, order_logistics
 -   **Messaging**: RabbitMQ for order events
 -   **State Machine**: Order status transition management
 
@@ -310,7 +309,7 @@ spec:
 
 
 
-## 🤝 Contributing | 贡献指南
+## 🤝 Contributing | 貢獻指南
 
 1.  **Fork the repository**
 2.  **Create feature branch** (`git checkout -b feature/awesome-feature`)
@@ -320,7 +319,7 @@ spec:
 6.  **Push to branch** (`git push origin feature/awesome-feature`)
 7.  **Open Pull Request**
 
-## 📄 License | 许可证
+## 📄 License | 許可證
 
 This project is licensed under the **Apache License 2.0** - see the [LICENSE](https://claude.ai/chat/LICENSE) file for details.
 
