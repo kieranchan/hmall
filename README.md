@@ -77,12 +77,15 @@ flowchart LR
 
 ### **Microservices Framework | 微服務框架**
 
+-   **Spring Cloud 2021.0.3**
 -   **Spring Cloud Alibaba 2021.0.4.0**
 -   **Spring Boot 2.7.12**
--   **Nacos 2.2.1** - Service Discovery & Configuration
--   **Gateway** - API Gateway & Load Balancing
--   **OpenFeign** - Service-to-Service Communication
+-   **Nacos** - Service Discovery & Configuration Management
+-   **Spring Cloud Gateway** - API Gateway & Routing
+-   **Spring Cloud LoadBalancer** - Client-side Load Balancing
+-   **OpenFeign** - Declarative HTTP Client
 -   **Sentinel** - Circuit Breaker & Rate Limiting
+-   **Seata** - Distributed Transaction Solution
 
 ### **Data & Messaging | 數據與消息**
 
@@ -90,12 +93,13 @@ flowchart LR
 -   **RabbitMQ 3.9** - Message Queue & Event Streaming
 -   **MyBatis Plus 3.4.3** - ORM Framework
 
-### **DevOps & Monitoring | 運維監控**
+### **DevOps & Tools | 運維工具**
 
 -   **Docker** - Containerization
 -   **Maven 3.8** - Build Management
--   **Swagger 3.0** - API Documentation
+-   **Knife4j + Swagger** - API Documentation
 -   **SLF4J + Logback** - Logging Framework
+-   **Hutool** - Java Utility Library
 
 ## 🚀 Quick Start | 快速開始
 
@@ -189,20 +193,20 @@ Infrastructure Services:
 
 ### **🔐 User Service | 用戶服務**
 
--   **Features**: Registration, Authentication, Profile Management
--   **Database**: user, user_profile, user_address
+-   **Features**: Registration, Authentication, Profile Management, Address Management
+-   **Database**: user, address
 -   **Security**: JWT token + BCrypt encryption
 
 ### **📦 Item Service | 商品服務**
 
--   **Features**: Catalog Management, Inventory Tracking, Price Engine
--   **Database**: item, category, brand, inventory
+-   **Features**: Catalog Management, Inventory Tracking, Price Management
+-   **Database**: item
 
 ### **🛒 Cart Service | 購物車服務**
 
--   **Features**: Cart Management, Session Sync, Batch Operations
--   **Sync**: Real-time synchronization across devices
--   **Optimization**: Cart merge for logged-in users
+-   **Features**: Cart Management, Batch Operations
+-   **Database**: cart
+-   **Messaging**: RabbitMQ for cart synchronization
 
 ### **📋 Trade Service | 訂單服務**
 
@@ -213,72 +217,33 @@ Infrastructure Services:
 
 ### **💳 Payment Service | 支付服務**
 
--   **Features**: Multiple Payment Gateways, Transaction Management
--   **Integration**: Alipay, WeChat Pay, Bank Cards
--   **Security**: PCI DSS compliance, encryption
--   **Reconciliation**: Automated payment reconciliation
+-   **Features**: Payment Order Management, Balance Payment, Transaction Management
+-   **Database**: pay_order
+-   **Integration**: Balance payment support
+-   **Distributed Transaction**: Seata for payment consistency
 
 ## 🔥 Performance Highlights | 性能亮點
 
 ### **⚡ High Concurrency | 高併發處理**
 
 -   **Load Balancing**: Spring Cloud LoadBalancer + Gateway for traffic distribution
--   **Connection Pooling**: HikariCP with optimized settings
--   **Async Processing**: CompletableFuture for non-blocking operations
--   **Result**: Support for 10,000+ concurrent users
-
-### **🚀 Caching Strategy | 緩存策略**
-
--   **Multi-level Caching**: L1 (Local) L2 (Database)
--   **Cache Warming**: Preload hot data during startup
--   **Cache Invalidation**: Event-driven cache refresh
--   **Performance Gain**: 80% reduction in database queries
+-   **Connection Pooling**: HikariCP (Spring Boot default)
+-   **Circuit Breaker**: Sentinel for fault tolerance and rate limiting
+-   **Distributed Transaction**: Seata for data consistency across services
 
 ### **🔄 Message-Driven Architecture | 消息驅動架構**
 
--   **Event Sourcing**: Domain events for data consistency
--   **SAGA Pattern**: Distributed transaction management
--   **Dead Letter Queue**: Failed message handling and retry
--   **Throughput**: Process 50,000+ messages per second
-
-## 📈 Monitoring & Operations | 監控運維
-
-### **Health Checks | 健康檢查**
-
-```bash
-# Service health endpoints
-GET /actuator/health          # Overall health
-GET /actuator/metrics         # Performance metrics
-GET /actuator/info           # Service information
-```
-
-### **Distributed Tracing | 分佈式追蹤**
-
--   **Sleuth Integration**: Request tracing across services
--   **Zipkin Dashboard**: Visual request flow analysis
--   **Performance Monitoring**: Response time and error rate tracking
-
-## 🧪 Testing | 測試策略
-
-### **Test Coverage | 測試覆蓋**
-
--   **Unit Tests**: 90%+ code coverage with JUnit 5
--   **Integration Tests**: Service-to-service communication
--   **Load Testing**: JMeter scripts for performance validation
--   **Contract Testing**: Pact for API contract verification
+-   **RabbitMQ Integration**: Asynchronous message processing for order and cart operations
+-   **Event-Driven Design**: Order events, cart synchronization, and payment notifications
+-   **Delayed Messages**: Order timeout checking with TTL queues
+-   **Seata Distributed Transaction**: Ensures consistency across microservices
 
 ## 🔧 Development Tools | 開發工具
 
-### **Code Quality | 代碼質量**
-
--   **Checkstyle**: Code style enforcement
--   **SpotBugs**: Static analysis for bug detection
--   **SonarQube**: Code quality metrics and technical debt
-
 ### **API Documentation | API文檔**
 
--   **Swagger UI**: Interactive API documentation
--   **Postman Collection**: Ready-to-use API testing collection
+-   **Knife4j UI**: Enhanced Swagger UI with better visualization
+-   **Access**: http://localhost:port/doc.html
 
 ## 🚀 Deployment | 部署方案
 
