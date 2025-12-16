@@ -1,0 +1,146 @@
+version: "3.8"
+
+services:
+  # -------------------------------------------------------------------
+  # 基础设施服务 (Infrastructure)
+  # -------------------------------------------------------------------
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: 123
+      MYSQL_DATABASE: hmall
+    volumes:
+      - ./sql:/docker-entrypoint-initdb.d # 自动初始化 SQL
+      - ./data/mysql:/var/lib/mysql
+    command: --default-authentication-plugin=mysql_native_password
+    networks:
+      - hm-net
+
+  nacos:
+    image: nacos/nacos-server:v2.2.1
+    container_name: nacos
+    environment:
+      - MODE=standalone
+    ports:
+      - "8848:8848"
+      - "9848:9848"
+    networks:
+      - hm-net
+
+  rabbitmq:
+    image: rabbitmq:3.9-management
+    container_name: rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: hmall
+      RABBITMQ_DEFAULT_PASS: hmall123
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+    networks:
+      - hm-net
+
+  # -------------------------------------------------------------------
+  # 微服务 (Microservices)
+  # -------------------------------------------------------------------
+  hm-gateway:
+    build: ./hm-gateway
+    container_name: hm-gateway
+    ports:
+      - "8080:8080"
+    environment:
+      - TZ=Asia/Shanghai
+      - SPRING_CLOUD_NACOS_SERVER_ADDR=nacos:8848
+      - SPRING_CLOUD_NACOS_DISCOVERY_SERVER_ADDR=nacos:8848
+      - SPRING_CLOUD_NACOS_CONFIG_SERVER_ADDR=nacos:8848
+    networks:
+      - hm-net
+    depends_on:
+      - nacos
+
+  user-service:
+    build: ./user-service
+    container_name: user-service
+    environment:
+      - TZ=Asia/Shanghai
+      - SPRING_CLOUD_NACOS_SERVER_ADDR=nacos:8848
+      - SPRING_CLOUD_NACOS_DISCOVERY_SERVER_ADDR=nacos:8848
+      - SPRING_CLOUD_NACOS_CONFIG_SERVER_ADDR=nacos:8848
+      - HM_DB_HOST=mysql
+    networks:
+      - hm-net
+    depends_on:
+      - nacos
+      - mysql
+
+  item-service:
+    build: ./item-service
+    container_name: item-service
+    environment:
+      - TZ=Asia/Shanghai
+      - SPRING_CLOUD_NACOS_SERVER_ADDR=nacos:8848
+      - SPRING_CLOUD_NACOS_DISCOVERY_SERVER_ADDR=nacos:8848
+      - SPRING_CLOUD_NACOS_CONFIG_SERVER_ADDR=nacos:8848
+      - HM_DB_HOST=mysql
+    networks:
+      - hm-net
+    depends_on:
+      - nacos
+      - mysql
+
+  cart-service:
+    build: ./cart-service
+    container_name: cart-service
+    environment:
+      - TZ=Asia/Shanghai
+      - SPRING_CLOUD_NACOS_SERVER_ADDR=nacos:8848
+      - SPRING_CLOUD_NACOS_DISCOVERY_SERVER_ADDR=nacos:8848
+      - SPRING_CLOUD_NACOS_CONFIG_SERVER_ADDR=nacos:8848
+      - HM_DB_HOST=mysql
+    networks:
+      - hm-net
+    depends_on:
+      - nacos
+      - mysql
+
+  trade-service:
+    build: ./trade-service
+    container_name: trade-service
+    environment:
+      - TZ=Asia/Shanghai
+      - SPRING_CLOUD_NACOS_SERVER_ADDR=nacos:8848
+      - SPRING_CLOUD_NACOS_DISCOVERY_SERVER_ADDR=nacos:8848
+      - SPRING_CLOUD_NACOS_CONFIG_SERVER_ADDR=nacos:8848
+      - HM_DB_HOST=mysql
+      - SPRING_RABBITMQ_HOST=rabbitmq
+      - SPRING_RABBITMQ_USERNAME=hmall
+      - SPRING_RABBITMQ_PASSWORD=hmall123
+    networks:
+      - hm-net
+    depends_on:
+      - nacos
+      - mysql
+      - rabbitmq
+
+  pay-service:
+    build: ./pay-service
+    container_name: pay-service
+    environment:
+      - TZ=Asia/Shanghai
+      - SPRING_CLOUD_NACOS_SERVER_ADDR=nacos:8848
+      - SPRING_CLOUD_NACOS_DISCOVERY_SERVER_ADDR=nacos:8848
+      - SPRING_CLOUD_NACOS_CONFIG_SERVER_ADDR=nacos:8848
+      - HM_DB_HOST=mysql
+      - SPRING_RABBITMQ_HOST=rabbitmq
+      - SPRING_RABBITMQ_USERNAME=hmall
+      - SPRING_RABBITMQ_PASSWORD=hmall123
+    networks:
+      - hm-net
+    depends_on:
+      - nacos
+      - mysql
+      - rabbitmq
+
+networks:
+  hm-net:
+    driver: bridge
