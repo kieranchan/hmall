@@ -176,15 +176,45 @@ Infrastructure Services:
     java -jar payment-service/target/payment-service.jar
     ```
 
-6.  **Verify Deployment | 驗證部署**
+## 🐳 Docker Deployment | Docker 部署指南
 
-    ```bash
-    # Check service registration in Nacos
-    curl http://localhost:8848/nacos/v1/ns/instance/list?serviceName=user-service
-    
-    # Test API Gateway
-    curl http://localhost:8080/api/users/profile
-    ```
+For a quick and consistent deployment across environments (VPS, Cloud, Local), use the provided Docker setup.
+
+### 1. Build Project | 构建项目
+
+First, package the Java applications into JAR files. Ensure you are in the project root.
+
+```bash
+mvn clean package -DskipTests
+```
+
+### 2. Start Environment | 启动环境
+
+Run the entire microservices cluster (including Nacos, MySQL, RabbitMQ) with one command:
+
+```bash
+docker-compose up -d --build
+```
+
+### 3. Import Configurations | 导入配置
+
+Since Nacos starts with an empty database, you need to import the configurations manually **once**.
+
+1.  Wait for Nacos to start (~30s).
+2.  Access Console: `http://localhost:8848/nacos` (User/Pass: `nacos`/`nacos`).
+3.  Go to **Configuration Management** -> **Import**.
+4.  Upload the `nacos_config_import.zip` file located in the project root.
+5.  Select **Overwrite** mode.
+
+Now all services (Gateway, User, Item, etc.) will pick up the configs and register themselves.
+
+### 4. Verify | 验证
+
+-   **Nacos**: Check Service List at `http://localhost:8848/nacos`.
+-   **Gateway**: Access `http://localhost:8080`.
+
+---
+
 
 ## 📊 Service Details | 服務詳情
 
