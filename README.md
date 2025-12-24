@@ -212,6 +212,25 @@ Now all services (Gateway, User, Item, etc.) will pick up the configs and regist
 
 -   **Nacos**: Check Service List at `http://localhost:8848/nacos`.
 -   **Gateway**: Access `http://localhost:8080`.
+-   **Sentinel**: Access `http://localhost:8090`.
+-   **RabbitMQ**: Access `http://localhost:15672`.
+
+### 5. Default Accounts | 默认账号
+
+| Service | Username | Password |
+|---------|----------|----------|
+| Nacos | nacos | nacos |
+| RabbitMQ | hmall | hmall123 |
+| Sentinel | sentinel | sentinel |
+| MySQL | root | 123 |
+| 商城用户 | jack | 123 |
+
+### 6. Server Requirements | 服务器配置要求
+
+Docker 部署需要的最低配置：
+- **内存**: 4GB+
+- **磁盘**: 20GB+
+- **CPU**: 2核+
 
 ---
 

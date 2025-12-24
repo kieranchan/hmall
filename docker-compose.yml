@@ -40,6 +40,35 @@ services:
     networks:
       - hm-net
 
+  seata:
+    image: seataio/seata-server:1.5.2
+    container_name: seata
+    ports:
+      - "8091:8091"
+      - "7091:7091"
+    environment:
+      - SEATA_PORT=8091
+      - STORE_MODE=db
+      - SEATA_IP=seata
+      - SEATA_CONFIG_NAME=file:/root/seata-config/registry
+    volumes:
+      - ./seata-config:/root/seata-config
+    networks:
+      - hm-net
+    depends_on:
+      - nacos
+      - mysql
+
+  sentinel:
+    image: bladex/sentinel-dashboard:1.8.6
+    container_name: sentinel
+    ports:
+      - "8090:8858"
+    environment:
+      - TZ=Asia/Shanghai
+    networks:
+      - hm-net
+
   # -------------------------------------------------------------------
   # 微服务 (Microservices)
   # -------------------------------------------------------------------
@@ -66,12 +95,14 @@ services:
       - SPRING_CLOUD_NACOS_SERVER_ADDR=nacos:8848
       - SPRING_CLOUD_NACOS_DISCOVERY_SERVER_ADDR=nacos:8848
       - SPRING_CLOUD_NACOS_CONFIG_SERVER_ADDR=nacos:8848
+      - SPRING_CLOUD_SENTINEL_TRANSPORT_DASHBOARD=sentinel:8858
       - HM_DB_HOST=mysql
     networks:
       - hm-net
     depends_on:
       - nacos
       - mysql
+      - sentinel
 
   item-service:
     build: ./item-service
@@ -81,12 +112,14 @@ services:
       - SPRING_CLOUD_NACOS_SERVER_ADDR=nacos:8848
       - SPRING_CLOUD_NACOS_DISCOVERY_SERVER_ADDR=nacos:8848
       - SPRING_CLOUD_NACOS_CONFIG_SERVER_ADDR=nacos:8848
+      - SPRING_CLOUD_SENTINEL_TRANSPORT_DASHBOARD=sentinel:8858
       - HM_DB_HOST=mysql
     networks:
       - hm-net
     depends_on:
       - nacos
       - mysql
+      - sentinel
 
   cart-service:
     build: ./cart-service
@@ -96,12 +129,14 @@ services:
       - SPRING_CLOUD_NACOS_SERVER_ADDR=nacos:8848
       - SPRING_CLOUD_NACOS_DISCOVERY_SERVER_ADDR=nacos:8848
       - SPRING_CLOUD_NACOS_CONFIG_SERVER_ADDR=nacos:8848
+      - SPRING_CLOUD_SENTINEL_TRANSPORT_DASHBOARD=sentinel:8858
       - HM_DB_HOST=mysql
     networks:
       - hm-net
     depends_on:
       - nacos
       - mysql
+      - sentinel
 
   trade-service:
     build: ./trade-service
@@ -111,6 +146,7 @@ services:
       - SPRING_CLOUD_NACOS_SERVER_ADDR=nacos:8848
       - SPRING_CLOUD_NACOS_DISCOVERY_SERVER_ADDR=nacos:8848
       - SPRING_CLOUD_NACOS_CONFIG_SERVER_ADDR=nacos:8848
+      - SPRING_CLOUD_SENTINEL_TRANSPORT_DASHBOARD=sentinel:8858
       - HM_DB_HOST=mysql
       - SPRING_RABBITMQ_HOST=rabbitmq
       - SPRING_RABBITMQ_USERNAME=hmall
@@ -121,6 +157,7 @@ services:
       - nacos
       - mysql
       - rabbitmq
+      - sentinel
 
   pay-service:
     build: ./pay-service
@@ -130,6 +167,7 @@ services:
       - SPRING_CLOUD_NACOS_SERVER_ADDR=nacos:8848
       - SPRING_CLOUD_NACOS_DISCOVERY_SERVER_ADDR=nacos:8848
       - SPRING_CLOUD_NACOS_CONFIG_SERVER_ADDR=nacos:8848
+      - SPRING_CLOUD_SENTINEL_TRANSPORT_DASHBOARD=sentinel:8858
       - HM_DB_HOST=mysql
       - SPRING_RABBITMQ_HOST=rabbitmq
       - SPRING_RABBITMQ_USERNAME=hmall
@@ -140,6 +178,25 @@ services:
       - nacos
       - mysql
       - rabbitmq
+      - sentinel
+
+  # -------------------------------------------------------------------
+  # 前端 Nginx (Frontend)
+  # -------------------------------------------------------------------
+  nginx:
+    build: ./hmall-nginx
+    container_name: nginx
+    ports:
+      - "80:80"
+      - "18080:18080"
+      - "18081:18081"
+      - "18082:18082"
+    environment:
+      - TZ=Asia/Shanghai
+    networks:
+      - hm-net
+    depends_on:
+      - hm-gateway
 
 networks:
   hm-net:

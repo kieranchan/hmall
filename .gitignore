@@ -1,5 +1,33 @@
+# IDE
 .idea/
 *.iml
+.vscode/
+.claude/
+
+# Build
+target/
+*.class
+*.jar
+!nacos_config_import.zip
+
+# Logs
 logs/
 *.log
-target/
+
+# Temp files
+*.tmp
+*.bak
+*.swp
+nul
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Docker data
+data/
+
+# Deploy packages
+hmall-src.zip
+hmall-deploy.zip
+deploy/
